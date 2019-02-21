@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test Index file</title>
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+        #img img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>HELLO WORLD</h1>
+        </div>
+        <div class="d-flex flex-row flex-wrap justify-content-center">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Seekable Video</h3>
+                </div>
+                <div class="card-body">
+                    <video controls width="100%">
+                        <source src='/video' type='video/mp4'>
+                    </video>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Images</h3>
+                    <small>These images is copy from <a href="https://www.pexels.com/search/cat/"
+                            target="_blank">Pexels.com</a></small>
+                </div>
+                <div class="card-body">
+                    <div id="img"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/main.js"></script>
+</body>
+
+</html>
