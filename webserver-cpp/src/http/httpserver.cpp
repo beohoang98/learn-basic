@@ -2,8 +2,8 @@
 #include <cstdio>
 #include <memory.h>
 
-#include "httpserver.h"
-#include "handler.h"
+#include "http/httpserver.h"
+#include "http/handler.h"
 
 using namespace http;
 using namespace std;
@@ -33,13 +33,13 @@ HttpServer::HttpServer(int port)
     }
 }
 
-void HttpServer::listen()
+void HttpServer::listen(void (*callback)(int port))
 {
-    if (::listen(sockfd, 5) < 0)
+    if (::listen(sockfd, 100) < 0)
     {
         exit(1);
     }
-    printf("\x1b[32m Server listen at http://0.0.0.0:%d \x1b[0m\n", port);
+    if (callback != nullptr) callback(port);
 
     while (true)
     {
@@ -50,9 +50,8 @@ void HttpServer::listen()
         char buffer[BUFFER_SIZE] = {0};
         string content;
         int get = 1;
-        while (get = read(newSocket, buffer, BUFFER_SIZE - 1) && get > 0)
+        while ((get = read(newSocket, buffer, BUFFER_SIZE - 1) > 0) && get > 0)
         {
-            // printf("%s", buffer);
             content += buffer;
             memset(&buffer[0], 0, BUFFER_SIZE);
             if (get < BUFFER_SIZE)
@@ -68,10 +67,14 @@ void HttpServer::listen()
             if (handler.match(request))
             {
                 isMatch = true;
-                HttpResponse res = handler.func(&request);
+                HttpResponse res;
+                handler.func(&request, &res);
+
                 ResponseRaw raw = res.getResponse();
                 write(newSocket, raw.buf, raw.len);
                 free(raw.buf);
+
+                printf("%s (%d): %s\n", request.method.c_str(), res.getStatus(), request.path.c_str());
             }
         }
 
@@ -84,12 +87,14 @@ void HttpServer::listen()
             ResponseRaw raw = res.getResponse();
             write(newSocket, raw.buf, raw.len);
             free(raw.buf);
+
+            printf("%s (%d): %s\n", request.method.c_str(), 404, request.path.c_str());
         }
         close(newSocket);
     }
 }
 
-void HttpServer::get(string path, HttpResponse (*callback)(HttpRequest *))
+void HttpServer::get(string path, void (*callback)(HttpRequest *, HttpResponse *))
 {
     HttpHandler handler;
     handler.path = path;
@@ -104,14 +109,11 @@ void HttpServer::useStatic(string path)
     HttpHandler handler;
     handler.path = "\\/" + path + "\\/.*";
     handler.method = "GET";
-    handler.func = [] (HttpRequest * req) -> HttpResponse {
-        HttpResponse res;
+    handler.func = [] (HttpRequest * req, HttpResponse * res) {
         string filePath = req->path;
         filePath = filePath.erase(0, 1);
-        res.sendFile(filePath.c_str());
-        res.setHeader("Content-Type", "text/plain");
-
-        return res;
+        res->sendFile(filePath.c_str());
+        res->setHeader("Content-Type", "text/plain");
     };
 
     this->listHandler.push_back(handler);

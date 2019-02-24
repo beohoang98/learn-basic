@@ -50,11 +50,11 @@ class HttpServer
 
   public:
     HttpServer(int port);
-    void listen();
+    void listen(void (*callback)(int port) = nullptr);
 
     void handle();
 
-    void get(string path, HttpResponse (*callback)(HttpRequest *));
+    void get(string path, void (*callback)(HttpRequest *, HttpResponse *));
     void useStatic(string path);
 };
 

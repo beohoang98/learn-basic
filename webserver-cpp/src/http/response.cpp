@@ -1,4 +1,4 @@
-#include "response.h"
+#include "http/response.h"
 #include <fstream>
 #include <ctime>
 #include <cstring>
@@ -39,7 +39,7 @@ void HttpResponse::write(const char * body)
     this->body.insert(this->body.end(), bodyStr.begin(), bodyStr.end());
 }
 
-void HttpResponse::sendFile(const char * filename, int start, int end)
+void HttpResponse::sendFile(const char * filename, long start, long end)
 {
     ifstream fi (filename, ios::binary);
     if (!fi.is_open()) {
@@ -111,4 +111,8 @@ ResponseRaw HttpResponse::getResponse()
     raw.len = lenHead + lenBody;
 
     return raw;
+}
+
+int HttpResponse::getStatus() {
+    return statusCode;
 }

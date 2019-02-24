@@ -24,7 +24,7 @@ class HttpRequest
 
     HttpRequest() {}
 
-    void parse(string content)
+    void parse(const string & content)
     {
         stringstream ss;
         ss << content;
@@ -45,10 +45,19 @@ class HttpRequest
             if (line.length() <= 1)
                 break; // \r
             sscanf(line.c_str(), "%[^:]: %s", key, value);
-            headers[string(key)] = string(value);
+            headers[key] = value;
         }
 
         ss.read(value, ss.gcount());
+    }
+
+    string get(const string key, const string val_default = "") {
+        auto it = headers.find(key);
+        if (it != headers.end()) {
+            return it->second;
+        } else {
+            return val_default;
+        }
     }
 };
 } // namespace http

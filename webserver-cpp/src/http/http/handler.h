@@ -16,7 +16,7 @@ struct HttpHandler
 {
     string path;
     string method;
-    HttpResponse (*func)(HttpRequest *req);
+    void (*func)(HttpRequest *req, HttpResponse *res);
 
     bool match(const HttpRequest &req)
     {

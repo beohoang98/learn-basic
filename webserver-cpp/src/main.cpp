@@ -7,18 +7,16 @@ using namespace std;
 
 int main()
 {
-    // in bin
-    #ifdef WORKING_DIR
-        chdir(WORKING_DIR);
-        printf("Working on dir %s\n", WORKING_DIR);
-    #endif
+    printf("Working on dir %s\n", get_current_dir_name());
 
     HttpServer server(8000);
-    server.get("/", hello);
-    server.get("/404", NotFound);
-    server.get("/video", VideoIndex);
+    server.get("/", Controller::hello);
+    server.get("/404", Controller::NotFound);
+    server.get("/video", Controller::VideoIndex);
     server.useStatic("static");
 
-    server.listen();
+    server.listen([](int port) {
+        printf("\x1b[32mServer listen at http://0.0.0.0:%d \x1b[0m\n", port);
+    });
     return 0;
 }
